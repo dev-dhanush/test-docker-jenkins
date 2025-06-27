@@ -13,10 +13,17 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
+    steps {
+        sh '''
+            node -v
+            npm -v
+            rm -rf node_modules package-lock.json
+            npm cache clean --force
+            npm install
+        '''
+    }
+}
+
 
         stage('Run App') {
             steps {
