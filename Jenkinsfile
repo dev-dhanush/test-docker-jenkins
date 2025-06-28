@@ -1,39 +1,26 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:14'
-        }
-    }
-
+    agent any
     stages {
-        stage('Checkout Code') {
+        stage('Clone Repo') {
             steps {
-                git 'https://github.com/dev-dhanush/test-docker-jenkins.git'
+                echo 'Cloning repo...'
+                git branch: 'master', url: 'https://github.com/dev-dhanush/test-docker-jenkins.git'
             }
         }
-
-        stage('Install Dependencies') {
-    steps {
-        sh '''
-            node -v
-            npm -v
-            rm -rf node_modules package-lock.json
-            npm cache clean --force
-            npm install
-        '''
-    }
-}
-
-
-        stage('Run App') {
+        stage('Build Docker Image') {
             steps {
-                sh 'node index.js & sleep 5'
+                echo 'Building Docker image...'
+                sh 'docker build -t Docker-App .'
             }
         }
-
-        stage('Health Check') {
+        stage('Run Docker Container') {
             steps {
-                sh 'curl -I http://localhost:3000'
+                echo 'Running container...'
+                sh '''
+                docker stop Docker-App || true
+                docker rm Docker-App || true
+                docker run -d -p 5000:5000 --name Docker-App App-image
+                '''
             }
         }
     }
