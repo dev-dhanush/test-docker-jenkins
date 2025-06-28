@@ -19,7 +19,7 @@ pipeline {
                 sh '''
                 docker stop docker-app || true
                 docker rm docker-app || true
-                docker run -d -p 5000:5000 --name docker-app app-image
+                docker run -d -p 5000:5000 --name docker-app docker-app
                 '''
             }
         }
